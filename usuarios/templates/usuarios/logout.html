@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Logout - OpenInventory</title>{% endblock %}
+
+{% block content %}
+<section class="py-5 text-center">
+    <div class="container">
+        <h2>Has cerrado sesión correctamente.</h2>
+        <p><a href="{% url 'login' %}">Iniciar sesión de nuevo</a></p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Movimientos - OpenInventory</title>{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2>Movimientos de Stock</h2>
+        {% if movimientos %}
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Usuario</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mov in movimientos %}
+                <tr>
+                    <td>{{ mov.fecha }}</td>
+                    <td>{{ mov.producto.nombre }}</td>
+                    <td>{{ mov.get_tipo_display }}</td>
+                    <td>{{ mov.cantidad }}</td>
+                    <td>{{ mov.usuario.username }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <h1>movimientos registrados</h1>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

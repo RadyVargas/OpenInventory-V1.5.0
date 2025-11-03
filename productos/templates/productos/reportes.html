@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}<title>Reportes - OpenInventory</title>{% endblock %}
+
+{% block content %}
+<h2>Reportes de Inventario</h2>
+
+<p><strong>Total de Productos:</strong> {{ total_productos }}</p>
+<p><strong>Stock Total:</strong> {{ stock_total }}</p>
+
+<h3>Últimos Movimientos</h3>
+<table border="1" cellpadding="5">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Usuario</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for movimiento in ultimos_movimientos %}
+        <tr>
+            <td>{{ movimiento.producto.nombre }}</td>
+            <td>{{ movimiento.cantidad }}</td>
+            <td>{{ movimiento.tipo }}</td>
+            <td>{{ movimiento.fecha }}</td>
+            <td>{{ movimiento.usuario.username }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No hay movimientos registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p><a href="{% url 'dashboard' %}">Volver al Dashboard</a></p>
+{% endblock %}

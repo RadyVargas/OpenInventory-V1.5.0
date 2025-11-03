@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}<title>Lista de Productos</title>{% endblock %}
+
+{% block content %}
+<h2>Lista de Productos</h2>
+
+{% if alerta_stock_bajo %}
+<div style="background-color:#ffcccc; border:1px solid red; padding:10px; margin-bottom:15px;">
+    <strong>⚠ Alerta:</strong> Los siguientes productos tienen bajo stock:
+    <ul>
+        {% for producto in productos_bajo_stock %}
+            <li>{{ producto.nombre }} (Stock: {{ producto.stock }})</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if user.rol in 'admin' or user.rol == 'bodeguero' %}
+  <p><a href="{% url 'productos-create' %}">Crear Nuevo Producto</a></p>
+{% endif %}
+
+<table border="1" cellpadding="5">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Categoria</th>
+            {% if user.rol in 'admin' or user.rol == 'bodeguero' %}
+            <th>Acciones</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in productos %}
+        <tr {% if producto.stock < 5 %}style="background-color:#fff0f0;"{% endif %}>
+            <td>{{ producto.id }}</td>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.precio }}</td>
+            <td>{{ producto.stock }}</td>
+            <td>{{ producto.categoria }}</td>
+            {% if user.rol in 'admin' or user.rol == 'bodeguero' %}
+            <td>
+                {% if user.rol == 'admin' or user.rol == 'bodeguero' %}
+                    <a href="{% url 'productos-update' producto.id %}">Editar</a> |
+                {% endif %}
+                {% if user.rol == 'admin' %}
+                    <a href="{% url 'productos-delete' producto.id %}">Eliminar</a>
+                {% endif %}
+            </td>
+            {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No hay productos registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p><a href="{% url 'dashboard' %}">Volver al Dashboard</a></p>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Movimientos de pedidos completados</h2>
+
+{% if pedidos %}
+    <ul>
+    {% for pedido in pedidos %}
+        <li>
+            <strong>Pedido #{{ pedido.id }}</strong> - {{ pedido.fecha_creacion|date:"d/m/Y H:i" }}<br>
+            Usuario: {{ pedido.usuario.username }} | Rol: {{ pedido.usuario.rol }}<br>
+            Estado: <strong>{{ pedido.estado }}</strong><br>
+            Productos:
+            <ul>
+                {% for detalle in pedido.detalles.all %}
+                    <li>{{ detalle.producto.nombre }}: {{ detalle.cantidad }}</li>
+                {% endfor %}
+            </ul>
+        </li>
+        <hr>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay pedidos completados aún.</p>
+{% endif %}
+
+{% endblock %}

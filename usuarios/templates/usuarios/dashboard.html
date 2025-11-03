@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Dashboard - OpenInventory</title>{% endblock %}
+
+{% block content %}
+<h2>Bienvenido, {{ user.username }} ({{ user.get_rol_display }})</h2>
+
+{% if user.rol == 'admin' %}
+    <p><a href="{% url 'productos-list' %}">Gestionar Productos</a></p>
+    <p><a href="{% url 'reportes' %}">Ver Movimientos de Stock</a></p>
+    <p><a href="{% url 'movimientos-create' %}">Registrar Movimiento</a></p>
+    <p><a href="{% url 'reportes' %}">Reportes</a></p>
+{% elif user.rol == 'bodeguero' %}
+    <p><a href="{% url 'lista_pedidos'%}">Pedidos</a></p>
+
+{% elif user.rol == 'gerente' %}
+    <p><a href="{% url 'reportes' %}">Ver Reportes</a></p>
+{% elif user.rol == 'propietario' %}
+    <p><a href="{% url 'productos-list' %}">Consultar Productos</a></p>
+{% endif %}
+
+<p><a href="{% url 'logout' %}">Cerrar sesión</a></p>
+{% endblock %}

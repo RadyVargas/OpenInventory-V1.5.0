@@ -1,37 +1,97 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}<title>Reportes - OpenInventory</title>{% endblock %}
 
 {% block content %}
-<h2>Reportes de Inventario</h2>
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 
-<p><strong>Total de Productos:</strong> {{ total_productos }}</p>
-<p><strong>Stock Total:</strong> {{ stock_total }}</p>
+<div class="dashboard-container text-white">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="dashboard-title mb-0">Reportes de Gestión</h1>
+        <div>
+            <a href="{% url 'descargar_reporte_pdf' %}" class="btn btn-danger" title="Descargar PDF">
+                <i class="fas fa-file-pdf"></i> PDF
+            </a>
+            <a href="{% url 'descargar_reporte_excel' %}" class="btn btn-success" title="Descargar Excel">
+                <i class="fas fa-file-excel"></i> Excel
+            </a>
+        </div>
+    </div>
 
-<h3>Últimos Movimientos</h3>
-<table border="1" cellpadding="5">
-    <thead>
-        <tr>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Tipo</th>
-            <th>Fecha</th>
-            <th>Usuario</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for movimiento in ultimos_movimientos %}
-        <tr>
-            <td>{{ movimiento.producto.nombre }}</td>
-            <td>{{ movimiento.cantidad }}</td>
-            <td>{{ movimiento.tipo }}</td>
-            <td>{{ movimiento.fecha }}</td>
-            <td>{{ movimiento.usuario.username }}</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5">No hay movimientos registrados.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white" style="background-color: #2a2f34;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Valor del Inventario</h5>
+                    <p class="card-text fs-4 fw-bold">{{ valor_inventario }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white" style="background-color: #2a2f34;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Unidades en Stock</h5>
+                    <p class="card-text fs-4 fw-bold">{{ total_stock_unidades }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white" style="background-color: #2a2f34;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Productos Bajo Stock</h5>
+                    <p class="card-text fs-4 fw-bold">{{ productos_bajo_stock.count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white" style="background-color: #2a2f34;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Pedidos del Mes</h5>
+                    <p class="card-text fs-4 fw-bold">{{ pedidos_completados_mes }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<p><a href="{% url 'dashboard' %}">Volver al Dashboard</a></p>
+    <div class="row">
+        <div class="col-md-6">
+            <h4 class="mb-3">Análisis de Productos</h4>
+            <div class="card text-white mb-3" style="background-color: #2a2f34;">
+                <div class="card-header" style="background-color: #343a40;">Top 5 Productos Más Vendidos</div>
+                <ul class="list-group list-group-flush">
+                    {% for p in top_5_mas_vendidos %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color: transparent; color: #f8f9fa;">{{ p.producto__nombre }} <span class="badge bg-success rounded-pill">{{ p.total_vendido }}</span></li>
+                    {% empty %}
+                        <li class="list-group-item" style="background-color: transparent; color: #f8f9fa;">No hay datos.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card text-white" style="background-color: #2a2f34;">
+                <div class="card-header" style="background-color: #343a40;">Top 5 Productos Menos Vendidos</div>
+                <ul class="list-group list-group-flush">
+                    {% for p in top_5_menos_vendidos %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color: transparent; color: #f8f9fa;">{{ p.producto__nombre }} <span class="badge bg-warning rounded-pill">{{ p.total_vendido }}</span></li>
+                    {% empty %}
+                        <li class="list-group-item" style="background-color: transparent; color: #f8f9fa;">No hay datos.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h4 class="mb-3">Rendimiento y Alertas</h4>
+            <div class="card text-white mb-3" style="background-color: #2a2f34;">
+                <div class="card-header" style="background-color: #343a40;">Rendimiento por Bodeguero</div>
+                <ul class="list-group list-group-flush">
+                    {% for b in rendimiento_bodegueros %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color: transparent; color: #f8f9fa;">{{ b.bodeguero__username }} <span class="badge bg-info rounded-pill">{{ b.total_completado }} pedidos</span></li>
+                    {% empty %}
+                        <li class="list-group-item" style="background-color: transparent; color: #f8f9fa;">No hay datos.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

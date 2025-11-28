@@ -6,11 +6,61 @@
 <section class="py-5">
     <div class="container col-md-4 offset-md-4">
         <h2 class="text-center mb-4">Iniciar sesión</h2>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+
+            <!-- Campo de usuario -->
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Usuario</label>
+                {{ form.username }}
+            </div>
+            <!-- Campo CAPTCHA -->
+            <div class="mb-3">
+                <label class="form-label">Verificación</label>
+                {{ form.captcha }}
+            </div>
+
+            <!-- Campo de contraseña con botón para verla -->
+            <div class="mb-3">
+                <label for="id_password" class="form-label">Contraseña</label>
+
+                <div class="input-group">
+                    {{ form.password }}
+                    <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                        👁️
+                    </button>
+                </div>
+            </div>
+
             <button type="submit" class="btn btn-primary w-100">Ingresar</button>
         </form>
     </div>
 </section>
+
+
+<!-- Script para mostrar/ocultar contraseña -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const passwordField = document.getElementById("id_password");
+    const toggleButton = document.getElementById("togglePassword");
+
+    toggleButton.addEventListener("click", function () {
+        const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+        passwordField.setAttribute("type", type);
+
+        // Cambiar icono si quieres
+        this.textContent = type === "password" ? "👁️" : "🙈";
+    });
+});
+</script>
+
 {% endblock %}

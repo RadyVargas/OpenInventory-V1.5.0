@@ -10,7 +10,6 @@ def movimientos_list(request):
 
 @login_required
 def movimientos_create(request):
-    # Solo admin y bodeguero pueden crear movimientos
     if request.user.rol not in ['admin', 'bodeguero']:
         return redirect('movimientos-list')
 

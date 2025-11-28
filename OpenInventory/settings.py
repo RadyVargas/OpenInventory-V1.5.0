@@ -52,10 +52,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # Nuestro middleware de timeout de sesión
+    # Middleware de timeout (debe ir después de SessionMiddleware)
     'core.middleware.SessionIdleTimeoutMiddleware',
 ]
 
+from django.contrib.messages import constants as messages
+
+MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
 ROOT_URLCONF = 'OpenInventory.urls'
 
@@ -153,7 +156,7 @@ LOGOUT_REDIRECT_URL = '/usuarios/login/'
 # =======================
 
 # Tiempo máximo de inactividad antes de que expire la sesión (en segundos)
-SESSION_IDLE_TIMEOUT = 9000  # 300 segundos = 5 minutos
+SESSION_IDLE_TIMEOUT = 1000  # 300 segundos = 5 minutos
 
 # Asegura que la sesión se guarde en base de datos (útil para control de expiración)
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'

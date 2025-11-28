@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Crear Pedido - OpenInventory</title>{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Crear Nuevo Pedido</h2>
+    <hr>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        <div id="formset-container">
+            {% for form in formset %}
+                <div class="row formset-row mb-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label">Producto</label>
+                        {{ form.producto }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Cantidad</label>
+                        {{ form.cantidad }}
+                    </div>
+                    <div class="col-md-2">
+                        {% if form.instance.pk %}
+                            {{ form.DELETE }}
+                            <label for="{{ form.DELETE.id_for_label }}">Eliminar</label>
+                        {% endif %}
+                    </div>
+                    <div style="display:none;">{{ form.id }}</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div id="empty-form" class="row formset-row mb-3 align-items-end" style="display:none;">
+            <div class="col-md-5">
+                <label class="form-label">Producto</label>
+                {{ formset.empty_form.producto }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Cantidad</label>
+                {{ formset.empty_form.cantidad }}
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+
+        <button type="button" id="add-form" class="btn btn-secondary mt-2">Agregar otro producto</button>
+        <button type="submit" class="btn btn-primary mt-2">Guardar Pedido</button>
+    </form>
+</div>
+
+<script>
+document.getElementById('add-form').addEventListener('click', function() {
+    const formsetContainer = document.getElementById('formset-container');
+    const emptyForm = document.getElementById('empty-form').cloneNode(true);
+    const totalForms = document.getElementById('id_detalles-TOTAL_FORMS');
+    const formIndex = parseInt(totalForms.value);
+    emptyForm.innerHTML = emptyForm.innerHTML.replace(/__prefix__/g, formIndex);
+    emptyForm.style.display = 'flex';
+    formsetContainer.appendChild(emptyForm);
+    totalForms.value = formIndex + 1;
+});
+</script>
+{% endblock %}

@@ -8,18 +8,58 @@ import os
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
+from django.core.validators import MinValueValidator, RegexValidator
+from django.core.exceptions import ValidationError
+
 
 class Producto(models.Model):
-    nombre = models.CharField(max_length=100)
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
-    stock = models.PositiveIntegerField()
-    categoria = models.CharField(max_length=50, blank=True, null=True)
+    nombre = models.CharField(
+        max_length=100,
+        validators=[
+            RegexValidator(
+                regex=r'^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_]+$',
+                message='El nombre solo puede contener letras, números, espacios y guiones.'
+            )
+        ]
+    )
+    precio = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[
+            MinValueValidator(0.01, message='El precio debe ser mayor que cero.')
+        ]
+    )
+    stock = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(1, message='El stock debe ser al menos 1.')
+        ]
+    )
+    categoria = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        validators=[
+            RegexValidator(
+                regex=r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$',
+                message='La categoría solo puede contener letras y espacios.'
+            )
+        ]
+    )
 
     def __str__(self):
         return f"{self.nombre}"
 
     def get_absolute_url(self):
         return reverse('productos-list')
+    @property
+    def precio_formateado(self):
+        return f"{int(self.precio):,}".replace(",", ".")
+
+
+    def clean(self):
+        super().clean()
+        if self.precio is not None and self.precio > 9999999999:
+            raise ValidationError('El precio es demasiado alto.')
 
 
 class Pedido(models.Model):
@@ -29,6 +69,7 @@ class Pedido(models.Model):
         ('completado', 'Completado'),
     ]
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    bodeguero = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos_asignados')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
 

@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Pedido #{{ pedido.id }} en proceso</h2>
+<h2 style="color: yellow;">Pedido #{{ pedido.id }} en proceso</h2>
 
 <ul>
     {% for detalle in detalles %}
-    <li>
-        {{ detalle.producto.nombre }} (x{{ detalle.cantidad }})
+    <li style="color: Aqua;">
+        {{ detalle.producto.nombre }} (Cantidad del pedido : {{ detalle.cantidad }})
         {% if detalle.producto.ubicacionproducto %}
             <br>
             <img src="{{ detalle.producto.ubicacionproducto.imagen.url }}" width="200">
-            <p>{{ detalle.producto.ubicacionproducto.descripcion }}</p>
+            <p style="color: red;">{{ detalle.producto.ubicacionproducto.descripcion }}</p>
         {% endif %}
         {% if not detalle.escaneado %}
             <span style="color:orange;">Pendiente de escanear</span>
@@ -20,13 +20,13 @@
     {% endfor %}
 </ul>
 
-<p>Estado: <strong>{{ pedido.estado }}</strong></p>
+<p style="color: Salmon;">Estado: <strong>{{ pedido.estado }}</strong></p>
 
 <hr>
-<h3>Escanear QR del producto</h3>
+<h3 style="color: green;">Escanear QR del producto</h3>
 <div id="qr-reader" style="width:300px"></div>
 
-<!-- Script para lector QR -->
+<!--lector QR -->
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
 function escaneoExitoso(decodedText, decodedResult) {

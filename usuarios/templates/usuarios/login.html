@@ -3,64 +3,91 @@
 {% block title %}<title>Login - OpenInventory</title>{% endblock %}
 
 {% block content %}
-<section class="py-5">
-    <div class="container col-md-4 offset-md-4">
-        <h2 class="text-center mb-4">Iniciar sesión</h2>
+<section class="d-flex align-items-center justify-content-center min-vh-100 py-5">
+    <div class="container col-md-5 col-lg-4">
+        <div class="card-custom fade-in">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-cube fa-3x text-accent mb-3"></i>
+                <h2 class="fw-bold">Bienvenido</h2>
+                <p class="text-muted">Inicia sesión para continuar</p>
+            </div>
+
             {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-danger">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+            {% for message in messages %}
+            <div class="alert alert-danger custom-alert border-0">
+                <i class="fa-solid fa-circle-exclamation me-2"></i> {{ message }}
+            </div>
+            {% endfor %}
             {% endif %}
 
+            <form method="post">
+                {% csrf_token %}
 
-        <form method="post">
-            {% csrf_token %}
-
-            <!-- Campo de usuario -->
-            <div class="mb-3">
-                <label for="id_username" class="form-label">Usuario</label>
-                {{ form.username }}
-            </div>
-            <!-- Campo CAPTCHA -->
-            <div class="mb-3">
-                <label class="form-label">Verificación</label>
-                {{ form.captcha }}
-            </div>
-
-            <!-- Campo de contraseña con botón para verla -->
-            <div class="mb-3">
-                <label for="id_password" class="form-label">Contraseña</label>
-
-                <div class="input-group">
-                    {{ form.password }}
-                    <button type="button" class="btn btn-outline-secondary" id="togglePassword">
-                        👁️
-                    </button>
+                <!-- Campo de usuario -->
+                <div class="mb-3">
+                    <label for="id_username" class="form-label small text-uppercase fw-bold"
+                        style="color: #e2e8f0;">Usuario</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0"><i
+                                class="fa-solid fa-user"></i></span>
+                        {{ form.username }}
+                    </div>
                 </div>
-            </div>
 
-            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
-        </form>
+                <!-- Campo CAPTCHA -->
+                <div class="mb-3">
+                    <label class="form-label small text-uppercase fw-bold" style="color: #e2e8f0;">Verificación</label>
+                    {{ form.captcha }}
+                </div>
+
+                <!-- Campo de contraseña con botón para verla -->
+                <div class="mb-4">
+                    <label for="id_password" class="form-label small text-uppercase fw-bold"
+                        style="color: #e2e8f0;">Contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0"><i
+                                class="fa-solid fa-lock"></i></span>
+                        {{ form.password }}
+                        <button type="button" class="btn btn-outline-secondary border-start-0" id="togglePassword">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary-custom w-100 py-2">
+                    Ingresar <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="text-center mt-4 text-muted small">
+            &copy; 2025 OpenInventory
+        </div>
     </div>
 </section>
 
-
 <!-- Script para mostrar/ocultar contraseña -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const passwordField = document.getElementById("id_password");
-    const toggleButton = document.getElementById("togglePassword");
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordField = document.getElementById("id_password");
+        const toggleButton = document.getElementById("togglePassword");
+        const icon = toggleButton.querySelector("i");
 
-    toggleButton.addEventListener("click", function () {
-        const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
-        passwordField.setAttribute("type", type);
+        if (toggleButton && passwordField) {
+            toggleButton.addEventListener("click", function () {
+                const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+                passwordField.setAttribute("type", type);
 
-        // Cambiar icono si quieres
-        this.textContent = type === "password" ? "👁️" : "🙈";
+                // Cambiar icono
+                if (type === "password") {
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                } else {
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+                }
+            });
+        }
     });
-});
 </script>
-
 {% endblock %}

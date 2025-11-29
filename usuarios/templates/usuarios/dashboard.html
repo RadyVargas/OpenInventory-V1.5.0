@@ -3,39 +3,67 @@
 
 {% block title %}<title>Dashboard - OpenInventory</title>{% endblock %}
 
-{% block content %}
+{% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
 
-<div class="dashboard-container">
+{% block content %}
+<div class="dashboard-container fade-in">
 
-    <h1 class="dashboard-title">CONTROL TOTAL SOBRE TU INVENTARIO</h1>
-    <p class="dashboard-subtitle">EN TIEMPO REAL</p>
-
-    <!-- tarjeta sme tricas -->
-    <div class="cards-container">
-        <div class="card">
-            <i class="fa-solid fa-box-open"></i>
-            <p class="label">STOCK TOTAL</p>
-            <h2>{{ total_stock|default:"0" }}</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="dashboard-title">Panel de Control</h1>
+            <p class="dashboard-subtitle mb-0">Visión general del inventario en tiempo real</p>
         </div>
-        <div class="card">
-            <i class="fa-solid fa-dollar-sign"></i>
-            <p class="label">VALOR DEL INVENTARIO</p>
-            <h2>${{ valor_inventario|floatformat:0 }}</h2>
-        </div>
-        <div class="card">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <p class="label">ARTÍCULOS BAJOS</p>
-            <h2>{{ productos_bajo_stock|default:"0" }}</h2>
-        </div>
-        <div class="card">
-            <i class="fa-solid fa-clipboard-list"></i>
-            <p class="label">TOTAL DE ÓRDENES</p>
-            <h2>{{ total_pedidos|default:"0" }}</h2>
+        <div class="date-display text-muted">
+            <i class="fa-regular fa-calendar me-2"></i> {% now "l, d F Y" %}
         </div>
     </div>
 
-    <!-- graficos -->
+    <!-- KPI Cards -->
+    <div class="cards-container">
+        <div class="card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="label">Stock Total</p>
+                    <h2>{{ total_stock|default:"0" }}</h2>
+                </div>
+                <i class="fa-solid fa-boxes-stacked opacity-50"></i>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="label">Valor Inventario</p>
+                    <h2>${{ valor_inventario|floatformat:0 }}</h2>
+                </div>
+                <i class="fa-solid fa-sack-dollar opacity-50"></i>
+            </div>
+        </div>
+
+        <div class="card {% if productos_bajo_stock > 0 %}critical{% endif %}">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="label">Stock Bajo</p>
+                    <h2>{{ productos_bajo_stock|default:"0" }}</h2>
+                </div>
+                <i class="fa-solid fa-triangle-exclamation opacity-50"></i>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="label">Total Pedidos</p>
+                    <h2>{{ total_pedidos|default:"0" }}</h2>
+                </div>
+                <i class="fa-solid fa-clipboard-check opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
     <div class="charts-container">
         <div class="chart-card">
             <h3>Valor del Inventario</h3>
@@ -47,26 +75,50 @@
         </div>
     </div>
 
-    <!-- orsednes -->
+    <!-- Recent Orders -->
     <div class="orders-container">
-        <h3>Órdenes Recientes</h3>
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>Orden</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pedido in pedidos_recientes %}
-                <tr>
-                    <td>{{ pedido.id }}</td>
-                    <td>{{ pedido.fecha }}</td>
-                    <td>{{ pedido.estado }}</td>
-                    <td>{{ pedido.total }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Órdenes Recientes</h3>
+            <a href="{% url 'lista_pedidos' %}" class="btn btn-sm btn-outline-light">Ver todas</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Orden #</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos_recientes %}
+                    <tr>
+                        <td><span class="fw-bold">#{{ pedido.id }}</span></td>
+                        <td>{{ pedido.fecha|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if pedido.estado == 'completado' %}
+                            <span class="badge badge--completed">Completado</span>
+                            {% else %}
+                            <span class="badge badge--pending">{{ pedido.estado|title }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="fw-bold">${{ pedido.total }}</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-ghost"><i class="fa-solid fa-eye"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">No hay órdenes recientes</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

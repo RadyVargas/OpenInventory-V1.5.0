@@ -7,7 +7,7 @@ from .models import Producto, Pedido, DetallePedido, UbicacionProducto
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'precio', 'stock', 'categoria', 'mostrar_qr')
+    list_display = ('nombre', 'precio', 'stock', 'categoria', 'imagen', 'mostrar_qr')
 
     def mostrar_qr(self, obj):
         qr_path = f"qr/producto_{obj.id}.png"
@@ -33,7 +33,7 @@ class PedidoAdmin(admin.ModelAdmin):
 
 @admin.register(DetallePedido)
 class DetallePedidoAdmin(admin.ModelAdmin):
-    list_display = ('pedido', 'producto', 'cantidad', 'escaneado')
+    list_display = ('pedido', 'producto', 'cantidad', 'precio_unitario', 'escaneado')
 
 
 @admin.register(UbicacionProducto)

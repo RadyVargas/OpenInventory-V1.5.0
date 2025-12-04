@@ -1,20 +1,30 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2 style="color: yellow;">Pedido #{{ pedido.id }} en proceso</h2>
+<h2 style="color: rgb(6, 202, 246);">Pedido #{{ pedido.id }} en proceso</h2>
+
+<div style="background-color: #333; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+    <h3 style="color: white; margin-top: 0;">Datos del Cliente</h3>
+    <p style="color: #ddd;"><strong>Nombre:</strong> {{ pedido.nombre_cliente|default:pedido.usuario.get_full_name }}
+    </p>
+    <p style="color: #ddd;"><strong>Email:</strong> {{ pedido.email_cliente|default:pedido.usuario.email }}</p>
+    <p style="color: #ddd;"><strong>Teléfono:</strong> {{ pedido.telefono_cliente|default:"No registrado" }}</p>
+    <p style="color: #ddd;"><strong>Dirección de Envío:</strong> {{ pedido.direccion_envio|default:"No registrada" }}
+    </p>
+</div>
 
 <ul>
     {% for detalle in detalles %}
     <li style="color: Aqua;">
         {{ detalle.producto.nombre }} (Cantidad del pedido : {{ detalle.cantidad }})
         {% if detalle.producto.ubicacionproducto %}
-            <br>
-            <img src="{{ detalle.producto.ubicacionproducto.imagen.url }}" width="200">
-            <p style="color: red;">{{ detalle.producto.ubicacionproducto.descripcion }}</p>
+        <br>
+        <img src="{{ detalle.producto.ubicacionproducto.imagen.url }}" width="200">
+        <p style="color: red;">{{ detalle.producto.ubicacionproducto.descripcion }}</p>
         {% endif %}
         {% if not detalle.escaneado %}
-            <span style="color:orange;">Pendiente de escanear</span>
+        <span style="color:orange;">Pendiente de escanear</span>
         {% else %}
-            <span style="color:green;">Escaneado ✔️</span>
+        <span style="color:green;">Escaneado ✔️</span>
         {% endif %}
     </li>
     {% endfor %}
@@ -29,40 +39,40 @@
 <!--lector QR -->
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
-function escaneoExitoso(decodedText, decodedResult) {
-    console.log(`QR escaneado: ${decodedText}`);
+    function escaneoExitoso(decodedText, decodedResult) {
+        console.log(`QR escaneado: ${decodedText}`);
 
-    const producto_id = decodedText
-        .replace("producto_", "")
-        .replace(".png", "")
-        .trim();
+        const producto_id = decodedText
+            .replace("producto_", "")
+            .replace(".png", "")
+            .trim();
 
-    fetch("{% url 'escanear_producto' %}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-CSRFToken": "{{ csrf_token }}",
-        },
-        body: `producto_id=${producto_id}&pedido_id={{ pedido.id }}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.status); 
-            location.reload();
-        } else {
-            alert(data.status);
-        }
-    })
-    .catch(err => console.error("Error:", err));
-}
+        fetch("{% url 'escanear_producto' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: `producto_id=${producto_id}&pedido_id={{ pedido.id }}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.status);
+                    location.reload();
+                } else {
+                    alert(data.status);
+                }
+            })
+            .catch(err => console.error("Error:", err));
+    }
 
 
-const html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {
-    fps: 10,
-    qrbox: 250
-});
-html5QrcodeScanner.render(escaneoExitoso);
+    const html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {
+        fps: 10,
+        qrbox: 250
+    });
+    html5QrcodeScanner.render(escaneoExitoso);
 </script>
 
 

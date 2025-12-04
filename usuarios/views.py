@@ -75,12 +75,12 @@ def dashboard(request):
         labels = ['Pendiente', 'En_proceso', 'Completado']
         data = [0, 0, 0]
 
-    #Top 3 productos con más stock
+    #3 productos con más stock
     productos_top_stock = Producto.objects.values('nombre', 'stock').order_by('-stock')[:3]
     productos_labels = [p['nombre'] for p in productos_top_stock]
     productos_stock = [p['stock'] for p in productos_top_stock]
 
-    #Top 5 productos más vendidos desde DetallePedido
+    #5 productos más vendidos desde DetallePedido
     productos_mas_vendidos = (
         DetallePedido.objects
         .values('producto__nombre')

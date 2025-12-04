@@ -65,6 +65,12 @@
                     </li>
                     {% endif %}
 
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'tienda:catalogo' %}" target="_blank">
+                            <i class="fa-solid fa-shopping-bag me-1"></i>Tienda
+                        </a>
+                    </li>
+
                     <li class="nav-item ms-lg-3">
                         <a class="btn btn-sm btn-outline-danger rounded-pill px-3" href="{% url 'logout' %}">
                             <i class="fa-solid fa-power-off me-1"></i> Salir

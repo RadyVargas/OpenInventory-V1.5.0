@@ -1,0 +1,113 @@
+{% extends 'tienda/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 text-center">
+        <h1 class="text-neon-pink mb-2">FINALIZAR COMPRA</h1>
+        <p class="mb-2 cyber-text-glow">Completa tus datos para procesar el pedido</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7 mb-4">
+        <div class="card cyber-card">
+            <div class="card-body p-4">
+                <h4 class="card-title text-neon-blue mb-4">
+                    <i class="fas fa-user-astronaut me-2"></i>DATOS DEL CLIENTE
+                </h4>
+
+                <form method="post" action="{% url 'tienda:checkout' %}">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="nombre_completo" class="form-label text-light">Nombre Completo</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-muted"><i
+                                    class="fas fa-user"></i></span>
+                            <input type="text" class="form-control cyber-input" id="nombre_completo"
+                                name="nombre_completo" required placeholder="Ej: John Doe">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label text-light">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-muted"><i
+                                        class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control cyber-input" id="email" name="email" required
+                                    placeholder="john@example.com">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="telefono" class="form-label text-light">Teléfono</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-muted"><i
+                                        class="fas fa-phone"></i></span>
+                                <input type="tel" class="form-control cyber-input" id="telefono" name="telefono"
+                                    required placeholder="+56 9 1234 5678">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="direccion" class="form-label text-light">Dirección de Envío</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-muted"><i
+                                    class="fas fa-map-marker-alt"></i></span>
+                            <textarea class="form-control cyber-input" id="direccion" name="direccion" rows="3" required
+                                placeholder="Calle Principal 123, Ciudad"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-cyber-primary btn-lg">
+                            <i class="fas fa-check-circle me-2"></i>CONFIRMAR PEDIDO
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card cyber-card">
+            <div class="card-body p-4">
+                <h4 class="card-title text-neon-blue mb-4">
+                    <i class="fas fa-list-alt me-2"></i>RESUMEN DEL PEDIDO
+                </h4>
+
+                <div class="table-responsive mb-3">
+                    <table class="table cyber-table table-sm">
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td class="text-light">{{ item.producto.nombre }} <small class="text-muted">x{{
+                                        item.cantidad }}</small></td>
+                                <td class="text-end text-neon-blue">${{ item.subtotal|floatformat:0 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="pt-3 text-end text-light h5">TOTAL + IVA:</td>
+                                <td class="pt-3 text-end text-neon-yellow h4">${{ total|floatformat:0 }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="alert cyber-alert alert-info d-flex align-items-center">
+                    <i class="fas fa-info-circle me-3 fa-2x"></i>
+                    <div>
+                        <small>Al confirmar, tu pedido será procesado por nuestro equipo de bodega. Recibirás un correo
+                            con los detalles. Si el pedido llega en mal estdo contactarse con el 
+                            con el administrador Randall, es PERUANO</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

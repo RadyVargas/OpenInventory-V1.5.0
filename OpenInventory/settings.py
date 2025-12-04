@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-u$)ja31q&%c*i22j^orp3kpa0!x#*8-l-9no!49okpbt#^*@o!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'phyllodial-unmolested-susana.ngrok-free.dev']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'phyllodial-unmolested-susana.ngrok-free.dev','radydev.pythonanywhere.com', 'www.radydev.pythonanywhere.com']
 
 
 # Application definition
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'usuarios',
     'productos',
     'movimientos',
+    'tienda',
     'captcha',
 ]
 

@@ -1,0 +1,87 @@
+{% extends 'tienda/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 text-center">
+        <h1 class="display-4 mb-3 text-neon-pink">CATÁLOGO DE PRODUCTOS</h1>
+        <p class="mb-2 cyber-text-glow">Explora nuestra tecnología del futuro</p>
+    </div>
+</div>
+
+<div class="row">
+    {% for producto in productos %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 cyber-card">
+            {% if producto.imagen %}
+            <div class="bg-dark rounded-top d-flex align-items-center justify-content-center" style="height: 250px;">
+                <img src="{{ producto.imagen.url }}" class="card-img-top cyber-card-img-top" alt="{{ producto.nombre }}"
+                    style="height: 100%; width: 100%; object-fit: contain; padding: 10px;">
+            </div>
+            {% else %}
+            <div class="d-flex align-items-center justify-content-center bg-dark text-secondary" style="height: 250px;">
+                <i class="fas fa-microchip fa-3x"></i>
+            </div>
+            {% endif %}
+
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title cyber-card-title">{{ producto.nombre }}</h5>
+                <p class="card-text text-muted small">{{ producto.categoria|default:"General" }}</p>
+
+                <div class="mt-auto">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="cyber-price">${{ producto.precio_formateado }}</span>
+                        {% if producto.stock > 0 %}
+                        <span class="badge bg-neon-green text-dark">Stock: {{ producto.stock }}</span>
+                        {% else %}
+                        <span class="badge bg-danger">Agotado</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'tienda:producto_detalle' producto.id %}" class="btn btn-cyber">
+                            <i class="fas fa-eye me-2"></i>VER DETALLES
+                        </a>
+                        {% if producto.stock > 0 %}
+                        <button onclick="agregarAlCarrito({{ producto.id }})" class="btn btn-cyber-primary">
+                            <i class="fas fa-cart-plus me-2"></i>AGREGAR
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <h3 class="text-muted">No hay productos disponibles en este momento.</h3>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    function agregarAlCarrito(productoId) {
+        fetch(`/tienda/carrito/agregar/${productoId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'cantidad=1'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Actualizar badge del carrito
+                    const badge = document.getElementById('cart-badge');
+                    if (badge) badge.textContent = data.cantidad_items;
+
+                    // Mostrar notificación
+                    alert('Producto agregado al carrito');
+                } else {
+                    alert(data.message);
+                }
+            });
+    }
+</script>
+{% endblock %}

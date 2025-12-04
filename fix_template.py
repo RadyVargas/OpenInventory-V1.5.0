@@ -1,0 +1,84 @@
+
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+este archivo arregla errores en los templates tambien, no se toca
+"""
+
+
+content = r'''{% extends 'tienda/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-8 text-center">
+        <div class="mb-4 text-neon-green">
+            <i class="fas fa-check-circle fa-6x glitch-hover"></i>
+        </div>
+
+        <h1 class="display-4 text-neon-green mb-3">¡PEDIDO CONFIRMADO!</h1>
+        <p class="lead text-light mb-5">Tu orden ha sido procesada exitosamente en el sistema.</p>
+
+        <div class="card cyber-card mb-5 text-start">
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h5 class="text-neon-blue">Detalles del Pedido</h5>
+                        <p class="text-neon-pink">N° Orden: <strong class="text-light">#{{ pedido.id }}</strong></p>
+                        <p class="text-neon-pink">Fecha: <strong class="text-light">{{ pedido.fecha_creacion|date:"d/m/Y H:i" }}</strong></p>
+                        <p class="text-neon-pink">Estado: <strong class="text-neon-yellow">{{ pedido.get_estado_display }}</strong></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h5 class="text-neon-blue">Datos de Envío</h5>
+                        <p class="text-neon-pink">Cliente: <strong class="text-light">{{ pedido.nombre_cliente }}</strong></p>
+                        <p class="text-neon-pink">Email: <strong class="text-light">{{ pedido.email_cliente }}</strong></p>
+                        <p class="text-neon-pink">Dirección: <strong class="text-light">{{ pedido.direccion_envio }}</strong></p>
+                    </div>
+                </div>
+
+                <hr class="border-secondary my-4">
+
+                <h5 class="text-neon-blue mb-3">Productos</h5>
+                <div class="table-responsive">
+                    <table class="table cyber-table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th class="text-center">Cant.</th>
+                                <th class="text-end">Precio Unit.</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detalle in detalles %}
+                            <tr>
+                                <td class="text-light">{{ detalle.producto.nombre }}</td>
+                                <td class="text-center text-light">{{ detalle.cantidad }}</td>
+                                <td class="text-end text-light">${{ detalle.precio_unitario|floatformat:0 }}</td>
+                                <td class="text-end text-neon-blue">${{ detalle.subtotal|floatformat:0 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end pt-3 h5 text-light">TOTAL PAGADO:</td>
+                                <td class="text-end pt-3 h4 text-neon-yellow">${{ total|floatformat:0 }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <a href="{% url 'tienda:catalogo' %}" class="btn btn-cyber-primary btn-lg">
+            <i class="fas fa-arrow-left me-2"></i>VOLVER AL CATÁLOGO
+        </a>
+    </div>
+</div>
+{% endblock %}'''
+
+with open(r'tienda\templates\tienda\compra_exitosa.html', 'w', encoding='utf-8') as f:
+    f.write(content)
+
+print("File written successfully!")

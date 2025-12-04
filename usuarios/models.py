@@ -7,6 +7,7 @@ class Usuario(AbstractUser):
         ('bodeguero', 'bodeguero'),
         ('propietario', 'Supervisor'),
         ('gerente', 'gerente'),
+        ('cliente', 'Cliente'),  # Para clientes de TechStore
     )
 
     rol = models.CharField(max_length=30, choices=ROLES, default='bodeguero')

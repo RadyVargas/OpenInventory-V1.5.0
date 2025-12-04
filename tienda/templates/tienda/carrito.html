@@ -1,0 +1,150 @@
+{% extends 'tienda/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="text-neon-pink mb-4">CARRITO DE COMPRAS</h1>
+    </div>
+</div>
+
+{% if items %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card cyber-card mb-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table cyber-table mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="p-3">Producto</th>
+                                <th scope="col" class="p-3">Precio</th>
+                                <th scope="col" class="p-3">Cantidad</th>
+                                <th scope="col" class="p-3">Subtotal</th>
+                                <th scope="col" class="p-3">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td class="p-3">
+                                    <div class="d-flex align-items-center">
+                                        {% if item.producto.imagen %}
+                                        <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}"
+                                            class="me-3 rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                                        {% else %}
+                                        <div class="me-3 rounded bg-dark d-flex align-items-center justify-content-center"
+                                            style="width: 50px; height: 50px;">
+                                            <i class="fas fa-microchip text-muted"></i>
+                                        </div>
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="mb-0 text-neon-blue">{{ item.producto.nombre }}</h6>
+                                            <small class="text-muted">{{ item.producto.categoria }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-3 align-middle">${{ item.producto.precio_formateado }}</td>
+                                <td class="p-3 align-middle">
+                                    <input type="number" class="form-control cyber-input form-control-sm"
+                                        value="{{ item.cantidad }}" min="1" max="{{ item.producto.stock }}"
+                                        onchange="actualizarCantidad({{ item.producto.id }}, this.value)"
+                                        style="width: 70px;">
+                                </td>
+                                <td class="p-3 align-middle text-neon-yellow fw-bold">${{ item.subtotal|floatformat:0 }}
+                                </td>
+                                <td class="p-3 align-middle">
+                                    <button onclick="eliminarDelCarrito({{ item.producto.id }})"
+                                        class="btn btn-sm btn-cyber-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card cyber-card">
+            <div class="card-body">
+                <h4 class="card-title text-neon-blue mb-4">RESUMEN</h4>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-light">Total Items:</span>
+                    <span class="text-light">{{ cantidad_items }}</span>
+                </div>
+                <hr class="border-secondary">
+                <div class="d-flex justify-content-between mb-4">
+                    <span class="h5 text-light">TOTAL:</span>
+                    <span class="h4 text-neon-yellow">${{ total|floatformat:0 }}</span>
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'tienda:checkout' %}" class="btn btn-cyber-primary btn-lg">
+                        <i class="fas fa-credit-card me-2"></i>PROCEDER AL PAGO
+                    </a>
+                    <a href="{% url 'tienda:catalogo' %}" class="btn btn-cyber">
+                        <i class="fas fa-arrow-left me-2"></i>SEGUIR COMPRANDO
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-6 text-center">
+        <div class="mb-4">
+            <i class="fas fa-shopping-cart fa-5x text-muted opacity-50"></i>
+        </div>
+        <h2 class="text-muted mb-4">Tu carrito está vacío</h2>
+        <a href="{% url 'tienda:catalogo' %}" class="btn btn-cyber-primary">
+            <i class="fas fa-store me-2"></i>IR AL CATÁLOGO
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    function actualizarCantidad(productoId, cantidad) {
+        fetch(`/tienda/carrito/actualizar/${productoId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `cantidad=${cantidad}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            });
+    }
+
+    function eliminarDelCarrito(productoId) {
+        if (confirm('¿Estás seguro de eliminar este producto?')) {
+            fetch(`/tienda/carrito/eliminar/${productoId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                });
+        }
+    }
+</script>
+{% endblock %}

@@ -23,11 +23,8 @@ urlpatterns = [
     path('usuarios/', include('usuarios.urls')),
     path('', include('productos.urls')),
     path('movimientos/', include('movimientos.urls')),
+    path('tienda/', include('tienda.urls')),
     path('captcha/', include('captcha.urls')),
-
-
-
- 
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

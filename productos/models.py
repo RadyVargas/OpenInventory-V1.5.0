@@ -45,6 +45,8 @@ class Producto(models.Model):
             )
         ]
     )
+    imagen = models.ImageField(upload_to='productos/', blank=True, null=True, verbose_name='Imagen del Producto')
+    descripcion = models.TextField(blank=True, null=True, verbose_name='Descripción del Producto')
 
     def __str__(self):
         return f"{self.nombre}"
@@ -72,6 +74,10 @@ class Pedido(models.Model):
     bodeguero = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos_asignados')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
+    nombre_cliente = models.CharField(max_length=200, blank=True, null=True)
+    email_cliente = models.EmailField(blank=True, null=True)
+    telefono_cliente = models.CharField(max_length=20, blank=True, null=True)
+    direccion_envio = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Pedido #{self.id} - {self.estado}"
@@ -81,10 +87,15 @@ class DetallePedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='detalles')
     producto = models.ForeignKey('Producto', on_delete=models.CASCADE)
     cantidad = models.PositiveIntegerField(default=1)
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     escaneado = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.producto.nombre} (x{self.cantidad})"
+
+    @property
+    def subtotal(self):
+        return self.cantidad * self.precio_unitario
 
 
 class UbicacionProducto(models.Model):

@@ -126,16 +126,21 @@ def _get_report_context():
     }
     return context
 
-@staff_member_required
+@login_required
 def reportes(request):
+    if request.user.rol not in ['admin', 'gerente', 'propietario']:
+        messages.error(request, "No tienes permiso para acceder a esta página.")
+        return redirect('dashboard_admin')
     """
     Vista para mostrar la página de reportes con KPIs y análisis.
     """
     context = _get_report_context()
     return render(request, 'productos/reportes.html', context)
 
-@staff_member_required
+@login_required
 def descargar_reporte_pdf(request):
+    if request.user.rol not in ['admin', 'gerente', 'propietario']:
+        return redirect('dashboard_admin')
     """
     Genera y descarga un reporte en PDF con los datos principales.
     """
@@ -191,8 +196,10 @@ def descargar_reporte_pdf(request):
     p.save()
     return response
 
-@staff_member_required
+@login_required
 def descargar_reporte_excel(request):
+    if request.user.rol not in ['admin', 'gerente', 'propietario']:
+        return redirect('dashboard_admin')
     """
     Genera y descarga un reporte en Excel con el listado de productos y rendimiento de bodegueros.
     """
@@ -240,7 +247,7 @@ def crear_pedido(request):
     return render(request, 'productos/crear_pedido.html', {'formset': formset})
 @login_required
 def lista_pedidos(request):
-    pedidos = Pedido.objects.filter(estado='pendiente')
+    pedidos = Pedido.objects.filter(estado='pendiente').order_by('-fecha_creacion')
     return render(request, 'productos/lista_pedidos.html', {'pedidos': pedidos})
 
 @login_required

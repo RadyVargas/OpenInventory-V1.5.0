@@ -1,0 +1,106 @@
+{% extends 'tienda/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card cyber-card mb-3">
+            <div class="row g-0">
+                <div class="col-md-6">
+                    {% if producto.imagen %}
+                    <div class="bg-dark rounded-start h-100 d-flex align-items-center justify-content-center"
+                        style="min-height: 400px;">
+                        <img src="{{ producto.imagen.url }}" class="img-fluid" alt="{{ producto.nombre }}"
+                            style="max-height: 500px; object-fit: contain; width: 100%; padding: 20px;">
+                    </div>
+                    {% else %}
+                    <div class="d-flex align-items-center justify-content-center bg-dark text-secondary h-100"
+                        style="min-height: 400px;">
+                        <i class="fas fa-microchip fa-5x"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <div class="card-body p-4 d-flex flex-column h-100">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{% url 'tienda:catalogo' %}"
+                                        class="text-neon-blue text-decoration-none">Catálogo</a></li>
+                                <li class="breadcrumb-item active text-light" aria-current="page">{{ producto.nombre }}
+                                </li>
+                            </ol>
+                        </nav>
+
+                        <h2 class="card-title cyber-card-title display-5 mb-3">{{ producto.nombre }}</h2>
+                        <p class="card-text text-light mb-4">{{ producto.categoria|default:"Tecnología" }}</p>
+
+                        <div class="mb-4">
+                            <h3 class="cyber-price display-4">${{ producto.precio_formateado }}</h3>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="text-neon-pink mb-3">Descripción</h5>
+                            <p class="card-text text-light">
+                                {% if producto.descripcion %}
+                                {{ producto.descripcion }}
+                                {% else %}
+                                Sin descripción disponible para este producto de alta tecnología.
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <div class="mt-auto">
+                            {% if producto.stock > 0 %}
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="badge bg-neon-green text-dark p-2 me-3">
+                                    <i class="fas fa-check-circle me-1"></i>Stock Disponible: {{ producto.stock }}
+                                </span>
+                            </div>
+
+                            <form onsubmit="event.preventDefault(); agregarAlCarrito({{ producto.id }});"
+                                class="d-flex gap-2">
+                                <input type="number" id="cantidad-{{ producto.id }}" class="form-control cyber-input"
+                                    value="1" min="1" max="{{ producto.stock }}" style="width: 80px;">
+                                <button type="submit" class="btn btn-cyber-primary flex-grow-1">
+                                    <i class="fas fa-cart-plus me-2"></i>AGREGAR AL CARRITO
+                                </button>
+                            </form>
+                            {% else %}
+                            <div class="alert cyber-alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Producto Agotado
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function agregarAlCarrito(productoId) {
+        const cantidadInput = document.getElementById(`cantidad-${productoId}`);
+        const cantidad = cantidadInput ? cantidadInput.value : 1;
+
+        fetch(`/tienda/carrito/agregar/${productoId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `cantidad=${cantidad}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const badge = document.getElementById('cart-badge');
+                    if (badge) badge.textContent = data.cantidad_items;
+                    alert('Producto agregado al carrito');
+                } else {
+                    alert(data.message);
+                }
+            });
+    }
+</script>
+{% endblock %}

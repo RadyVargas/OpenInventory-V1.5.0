@@ -3,229 +3,187 @@
 
 {% block title %}<title>Dashboard - OpenInventory</title>{% endblock %}
 
-{% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-{% endblock %}
-
 {% block content %}
-<div class="dashboard-container fade-in">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="dashboard-title">Panel de Control</h1>
-            <p class="dashboard-subtitle mb-0">Visión general del inventario en tiempo real</p>
-        </div>
-        <div class="date-display text-muted">
-            <i class="fa-regular fa-calendar me-2"></i> {% now "l, d F Y" %}
-        </div>
-    </div>
+<div class="dashboard-container">
+    <h1 class="dashboard-title">INFORMACION DE INVENTARIO</h1>
+    <p class="dashboard-subtitle">EN TIEMPO REAL</p>
 
-    <!-- KPI Cards -->
+    <!-- Tarjetas principales -->
     <div class="cards-container">
         <div class="card">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="label">Stock Total</p>
-                    <h2>{{ total_stock }}</h2>
-                </div>
-                <i class="fa-solid fa-boxes-stacked opacity-50"></i>
-            </div>
+            <i class="fa-solid fa-box-open"></i>
+            <p class="label">STOCK TOTAL</p>
+            <h2>{{ total_stock }}</h2>
         </div>
-
         <div class="card">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="label">Valor Inventario</p>
-                    <h2>${{ valor_inventario }}</h2>
-                </div>
-                <i class="fa-solid fa-sack-dollar opacity-50"></i>
-            </div>
+            <i class="fa-solid fa-dollar-sign"></i>
+            <p class="label">VALOR DEL INVENTARIO</p>
+            <h2>${{ valor_inventario }}</h2>
         </div>
-
         <div class="card {% if productos_bajos.count > 0 %}critical{% endif %}">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="label">Stock Bajo</p>
-                    <h2>{{ productos_bajos.count }}</h2>
-                </div>
-                <i class="fa-solid fa-triangle-exclamation opacity-50"></i>
-            </div>
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p class="label">ARTÍCULOS BAJOS</p>
+            <h2>{{ productos_bajos.count }}</h2>
         </div>
-
         <div class="card">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <p class="label">Total Pedidos</p>
-                    <h2>{{ total_pedidos }}</h2>
-                </div>
-                <i class="fa-solid fa-clipboard-check opacity-50"></i>
-            </div>
+            <i class="fa-solid fa-clipboard-list"></i>
+            <p class="label">TOTAL DE ÓRDENES</p>
+            <h2>{{ total_pedidos }}</h2>
         </div>
     </div>
 
-    <!-- Charts -->
+    <!-- Gráficos -->
     <div class="charts-container">
         <div class="chart-card">
-            <h3><i class="fa-solid fa-chart-bar me-2 text-accent"></i> Top Productos (Stock)</h3>
-            <div style="height: 300px;">
-                <canvas id="productosStockChart"></canvas>
-            </div>
+            <h3 style="color: SkyBlue;">Productos con Más Stock</h3>
+            <canvas id="productosStockChart"></canvas>
         </div>
 
         <div class="chart-card">
-            <h3><i class="fa-solid fa-chart-pie me-2 text-accent"></i> Más Vendidos</h3>
-            <div style="height: 300px;">
-                <canvas id="masVendidosChart"></canvas>
-            </div>
-        </div>
+            <h3 style="color: SkyBlue;">Productos Más Vendidos</h3>
+            <canvas id="masVendidosChart" width="100" height="50"></canvas>       
+         </div>
     </div>
 
-    <!-- Stock Critical Table -->
+    <!-- Tabla de productos con stock bajo -->
     <div class="orders-container">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i> Alerta de Stock Crítico</h3>
-        </div>
-
-        <div class="table-responsive">
-            <table class="orders-table">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Categoría</th>
-                        <th>Stock Actual</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for producto in productos_bajos %}
-                    <tr>
-                        <td class="fw-bold">{{ producto.nombre }}</td>
-                        <td class="text-muted">{{ producto.categoria|default:"General" }}</td>
-                        <td>
-                            <span
-                                class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">
-                                {{ producto.stock }} unidades
-                            </span>
-                        </td>
-                        <td><span class="text-danger small fw-bold">REPONER URGENTE</span></td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center py-4 text-muted">
-                            <i class="fa-solid fa-check-circle text-success mb-2 fa-2x"></i>
-                            <p class="mb-0">Todo en orden. No hay productos con stock crítico.</p>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <h3 style="color: yellow;">Productos con Stock Crítico</h3>
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos_bajos %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td class="critical-text">{{ producto.stock }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="2">No hay productos con stock bajo</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
+
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Common Chart Options
-        Chart.defaults.color = '#94a3b8';
-        Chart.defaults.font.family = "'Inter', sans-serif";
+document.addEventListener("DOMContentLoaded", function() {
+    try {
+        // ✅ Recibimos datos del backend
+        const labelsRaw = '{{ productos_labels_json|escapejs }}';
+        const dataRaw = '{{ productos_stock_json|escapejs }}';
 
-        const commonOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: { color: '#e2e8f0', font: { size: 12 } }
-                }
+        // 🔍 Log de depuración
+        console.log("📦 Datos crudos desde Django:", labelsRaw, dataRaw);
+
+        // ✅ Parseamos los datos
+        const labels = labelsRaw ? JSON.parse(labelsRaw) : [];
+        const data = dataRaw ? JSON.parse(dataRaw) : [];
+
+        console.log("✅ Datos del gráfico parseados:", labels, data);
+
+        // 🧩 Validación
+        if (!Array.isArray(labels) || !Array.isArray(data) || !labels.length || !data.length) {
+            console.warn("⚠ No hay datos válidos para el gráfico de productos.");
+            return;
+        }
+
+        // 🧱 Verificamos que el canvas exista
+        const canvas = document.getElementById('productosStockChart');
+        if (!canvas) {
+            console.error("⚠ No se encontró el elemento canvas con id 'productosStockChart'.");
+            return;
+        }
+
+        // 📊 Crear gráfico
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Stock de productos',
+                    data: data,
+                    backgroundColor: ['#10ddebff', '#0e6ce7ff', '#0bf50fff'],
+                    borderWidth: 1
+                }]
             },
-            scales: {
-                y: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: '#94a3b8' }
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Top 3 Productos con Más Stock' }
                 },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#94a3b8' }
+                scales: {
+                    y: { beginAtZero: true }
                 }
             }
-        };
-
-        // --- Chart 1: Stock ---
-        try {
-            const labelsRaw = '{{ productos_labels_json|escapejs }}';
-            const dataRaw = '{{ productos_stock_json|escapejs }}';
-            const labels = labelsRaw ? JSON.parse(labelsRaw) : [];
-            const data = dataRaw ? JSON.parse(dataRaw) : [];
-
-            if (labels.length && data.length) {
-                const ctx = document.getElementById('productosStockChart').getContext('2d');
-
-                // Gradient
-                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-                gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)'); // Blue
-                gradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
-
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Unidades en Stock',
-                            data: data,
-                            backgroundColor: gradient,
-                            borderColor: '#3b82f6',
-                            borderWidth: 1,
-                            borderRadius: 6,
-                            barPercentage: 0.6
-                        }]
-                    },
-                    options: {
-                        ...commonOptions,
-                        plugins: {
-                            ...commonOptions.plugins,
-                            legend: { display: false }
-                        }
-                    }
-                });
-            }
-        } catch (e) { console.error("Chart 1 Error", e); }
-
-        // --- Chart 2: Sales ---
-        try {
-            const labelsRaw = '{{ mas_vendidos_labels_json|escapejs }}';
-            const dataRaw = '{{ mas_vendidos_data_json|escapejs }}';
-            const labels = labelsRaw ? JSON.parse(labelsRaw) : [];
-            const data = dataRaw ? JSON.parse(dataRaw) : [];
-
-            if (labels.length && data.length) {
-                const ctx = document.getElementById('masVendidosChart').getContext('2d');
-
-                // Gradient
-                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-                gradient.addColorStop(0, 'rgba(16, 185, 129, 0.8)'); // Emerald
-                gradient.addColorStop(1, 'rgba(16, 185, 129, 0.1)');
-
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Unidades Vendidas',
-                            data: data,
-                            backgroundColor: gradient,
-                            borderColor: '#10b981',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: '#064e3b',
-                            pointBorderColor: '#10b981',
-                            pointRadius: 4
-                        }]
-                    },
-                    options: commonOptions
-                });
-            }
-        } catch (e) { console.error("Chart 2 Error", e); }
-    });
+        });
+    } catch (error) {
+        console.error("❌ Error al procesar los datos del gráfico de productos:", error);
+    }
+});
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    try {
+        const labelsRaw = '{{ mas_vendidos_labels_json|escapejs }}';
+        const dataRaw = '{{ mas_vendidos_data_json|escapejs }}';
+
+        const labels = labelsRaw ? JSON.parse(labelsRaw) : [];
+        const data = dataRaw ? JSON.parse(dataRaw) : [];
+
+        if (!Array.isArray(labels) || !Array.isArray(data) || !labels.length || !data.length) {
+            console.warn("No hay datos válidos para el gráfico de productos más vendidos.");
+            return;
+        }
+
+        const canvas = document.getElementById('masVendidosChart');
+        if (!canvas) {
+            console.error("No se encontró el elemento canvas con id 'masVendidosChart'.");
+            return;
+        }
+
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Cantidad vendida',
+                    data: data,
+                    backgroundColor: '#09ec60ff',
+                    borderWidth: 1
+
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Top 5 Productos Más Vendidos' }
+                },
+                
+                scales: {
+
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    } catch (error) {
+        console.error("Error al crear gráfico de productos más vendidos:", error);
+    }
+});
+</script>
+
+
 {% endblock %}

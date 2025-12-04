@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Dashboard - OpenInventory</title>{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+<div class="dashboard-container">
+
+    <h1 class="dashboard-title">CONTROL TOTAL SOBRE TU INVENTARIO</h1>
+    <p class="dashboard-subtitle">EN TIEMPO REAL</p>
+
+    <!-- Tarjetas de métricas -->
+    <div class="cards-container">
+        <div class="card">
+            <i class="fa-solid fa-box-open"></i>
+            <p class="label">STOCK TOTAL</p>
+            <h2>{{ total_stock|default:"0" }}</h2>
+        </div>
+        <div class="card">
+            <i class="fa-solid fa-dollar-sign"></i>
+            <p class="label">VALOR DEL INVENTARIO</p>
+            <h2>${{ valor_inventario|floatformat:0 }}</h2>
+        </div>
+        <div class="card">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p class="label">ARTÍCULOS BAJOS</p>
+            <h2>{{ productos_bajo_stock|default:"0" }}</h2>
+        </div>
+        <div class="card">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <p class="label">TOTAL DE ÓRDENES</p>
+            <h2>{{ total_pedidos|default:"0" }}</h2>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-container">
+        <div class="chart-card">
+            <h3>Valor del Inventario</h3>
+            <canvas id="valorInventarioChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Niveles de Stock</h3>
+            <canvas id="stockChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Órdenes recientes -->
+    <div class="orders-container">
+        <h3>Órdenes Recientes</h3>
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Orden</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in pedidos_recientes %}
+                <tr>
+                    <td>{{ pedido.id }}</td>
+                    <td>{{ pedido.fecha }}</td>
+                    <td>{{ pedido.estado }}</td>
+                    <td>{{ pedido.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+{% endblock %}

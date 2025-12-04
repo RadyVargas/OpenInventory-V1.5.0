@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Login - OpenInventory</title>{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container col-md-4 offset-md-4">
+        <h2 class="text-center mb-4">Iniciar sesión</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+        </form>
+    </div>
+</section>
+{% endblock %}
